@@ -2,11 +2,11 @@
   "name": "heroes-app",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve",
+    "start": "ng serve --watch",
+    "back-end": "json-server --watch data/db.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "back-end": "json-server --watch data/db.json"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
