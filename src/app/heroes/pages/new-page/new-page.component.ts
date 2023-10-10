@@ -3,7 +3,7 @@ import { HeroesService } from '../../services/heroes.service'
 import { FormControl, FormGroup } from '@angular/forms'
 import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs';
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialog } from '@angular/material/dialog';
@@ -92,12 +92,28 @@ export class NewPageComponent implements OnInit {
         data: this.heroForm.value
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (!result) return;
+      dialogRef.afterClosed()
+        .pipe(
+          filter( (result:boolean ) => result ),
+          switchMap( () => this.heroesService.deleteHeroById(this.currentHero.id)),
+          filter( (wasDeleted: boolean) => wasDeleted)
+        )
+        .subscribe( () => {
+          this.router.navigateByUrl('heroes/list');
+        })
 
-        this.heroesService.deleteHeroById(this.currentHero.id);
-        this.router.navigateByUrl('heroes/list');
-      });
+      // dialogRef.afterClosed().subscribe(result => {
+      //   if (!result) return;
+
+      //   if (result) {
+      //     this.heroesService.deleteHeroById(this.currentHero.id)
+      //       .subscribe( wasDeleted => {
+      //         if (wasDeleted) {
+      //           this.router.navigateByUrl('heroes/list');
+      //         }
+      //       });
+      //   }
+      // });
     }
 
     showSnackBar( message: string):void {
